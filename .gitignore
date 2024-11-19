@@ -1,6 +1,13 @@
+# IDEs y editores
 node_modules/
 pnpm-lock.yaml
 .vscode/
+
+# Archivos de sistema
 .DS_Store
 Thumbs.db
 .python-version
+
+# archivos temporales
+*.log
+*.pid
