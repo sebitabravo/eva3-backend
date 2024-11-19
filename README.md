@@ -66,6 +66,6 @@ pnpm dev
 
 ## Authors
 
-- [@sebitabravo](https://github.com/sebitabravo)
-- [](https://github.com/)
+- [Sebastian Bravo](https://github.com/sebitabravo)
+- [Cosme Fulanito](https://github.com/frfdez)
 - [](https://github.com/)

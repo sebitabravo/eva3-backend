@@ -3,3 +3,4 @@ pnpm-lock.yaml
 .vscode/
 .DS_Store
 Thumbs.db
+.python-version
