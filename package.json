@@ -1,0 +1,12 @@
+{
+  "name": "eva3-backend",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter frontend dev\" \"cd backend && source venv/bin/activate && python manage.py runserver\""
+  },
+  "packageManager": "pnpm@9.13.2",
+  "dependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
