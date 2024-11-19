@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}CRUD Clientes{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <header class="navbar">
+    <nav>
+      <ul>
+        <li><a href="/admin">Usuario</a></li>
+        <li><a href="/api/v1">API Root</a></li>
+        <li><a href="/api/token/">Crear Token</a></li>
+        <li><a href="/api/token/refresh/">Actualizar Token</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="content">
+    {% block content %}
+    {% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2024 Mi Proyecto CRUD</p>
+  </footer>
+</body>
+</html>

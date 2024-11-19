@@ -1,11 +1,20 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Cliente
 from .serializers import ClienteSerializer
 
+
 # Create your views here.
+
+@login_required
+def cliente_list(request):
+    clientes = Cliente.objects.all()
+    return render(request, 'clientes/cliente_list.html', {'clientes': clientes})
 
 
 class ClienteViewSet(viewsets.ModelViewSet):
