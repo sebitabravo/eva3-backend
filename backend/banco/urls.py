@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.documentation import include_docs_urls
 from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
@@ -26,4 +27,5 @@ urlpatterns = [
          name='token_refresh'),
     path('api/v1/', include('clientes.urls')),
     path('api/v2/', include('clientes_templates.urls')),
+    path('docs/', include_docs_urls(title='Documentacion API Banco')),
 ]

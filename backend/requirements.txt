@@ -6,3 +6,4 @@ jupyter
 pandas
 django-cors-headers
 python-dotenv
+coreapi
