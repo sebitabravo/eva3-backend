@@ -17,7 +17,7 @@ class Cliente(models.Model):
         (5, 'Muy Satisfecho'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     cliente_id = models.AutoField(primary_key=True)
     edad = models.IntegerField()
     genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
