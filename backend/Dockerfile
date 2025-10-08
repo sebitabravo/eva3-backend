@@ -33,6 +33,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     curl \
+    netcat-traditional \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar dependencias desde builder

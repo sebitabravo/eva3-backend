@@ -5,9 +5,27 @@ echo "🚀 Iniciando aplicación Django..."
 
 # Esperar a que PostgreSQL esté listo
 echo "⏳ Esperando a PostgreSQL..."
-while ! nc -z $DATABASE_HOST $DATABASE_PORT; do
-  sleep 0.1
-done
+export DATABASE_HOST=${DB_HOST:-db}
+export DATABASE_PORT=${DB_PORT:-5432}
+
+# Intentar con nc primero, si falla usar un método alternativo
+if command -v nc &> /dev/null; then
+    echo "Usando netcat para verificar conexión..."
+    while ! nc -z $DATABASE_HOST $DATABASE_PORT; do
+        echo "Esperando PostgreSQL en $DATABASE_HOST:$DATABASE_PORT..."
+        sleep 1
+    done
+else
+    echo "Usando método alternativo para verificar conexión..."
+    for i in {1..30}; do
+        if pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U ${DB_USER:-banco_user} > /dev/null 2>&1; then
+            break
+        fi
+        echo "Esperando PostgreSQL en $DATABASE_HOST:$DATABASE_PORT... (intento $i/30)"
+        sleep 1
+    done
+fi
+
 echo "✅ PostgreSQL está listo!"
 
 # Ejecutar migraciones
