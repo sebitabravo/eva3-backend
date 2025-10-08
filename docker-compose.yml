@@ -1,0 +1,170 @@
+version: '3.9'
+
+# ===================================
+# DOCKER COMPOSE UNIVERSAL
+# Funciona para desarrollo Y producción
+# Usa variables de entorno para adaptarse
+# ===================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: eva3_postgres
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    environment:
+      - POSTGRES_DB=${DB_NAME:-banco_db}
+      - POSTGRES_USER=${DB_USER:-banco_user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-banco_password}
+      - POSTGRES_INITDB_ARGS=--locale=C --encoding=UTF8 --auth-local=scram-sha-256 --auth-host=scram-sha-256
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_buffers=128MB"
+      - "-c"
+      - "effective_cache_size=256MB"
+      - "-c"
+      - "work_mem=4MB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "max_connections=20"
+      - "-c"
+      - "log_statement=${PG_LOG_STATEMENT:-all}"
+      - "-c"
+      - "log_duration=${PG_LOG_DURATION:-on}"
+    # Puerto interno - solo accesible entre contenedores
+    expose:
+      - "5432"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-banco_user} -d ${DB_NAME:-banco_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - eva3_network
+
+  web:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eva3_web
+    restart: unless-stopped
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - logs_volume:/app/logs
+    ports:
+      - "${HOST_PORT:-8000}:8000"
+    environment:
+      # Django settings
+      - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-dev-secret-key-change-in-production}
+      - DEBUG=${DEBUG:-True}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      
+      # Database
+      - DB_NAME=${DB_NAME:-banco_db}
+      - DB_USER=${DB_USER:-banco_user}
+      - DB_PASSWORD=${DB_PASSWORD:-banco_password}
+      - DB_HOST=db
+      - DB_PORT=5432
+      
+      # Demo mode
+      - DEMO_MODE=${DEMO_MODE:-False}
+      
+      # Superuser
+      - DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME:-admin}
+      - DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL:-admin@example.com}
+      - DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD:-admin}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8000/api/v1/clientes/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - eva3_network
+      - dokploy-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: ${NODE_ENV:-production}  # production o development
+    container_name: eva3_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-80}:${FRONTEND_INTERNAL_PORT:-80}"
+    environment:
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:8000/api/v1}
+      - VITE_DEMO_MODE=${VITE_DEMO_MODE:-false}
+      - NODE_ENV=${NODE_ENV:-production}
+    depends_on:
+      - web
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "2"
+    networks:
+      - eva3_network
+      - dokploy-network
+
+volumes:
+  postgres_data:
+    driver: local
+  static_volume:
+    driver: local
+  media_volume:
+    driver: local
+  logs_volume:
+    driver: local
+
+networks:
+  eva3_network:
+    driver: bridge
+    name: eva3_network
+  dokploy-network:
+    external: true
