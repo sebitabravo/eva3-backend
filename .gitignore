@@ -11,3 +11,8 @@ Thumbs.db
 # archivos temporales
 *.log
 *.pid
+
+# Variables de entorno y secretos
+.env
+.env.local
+.env.*.local

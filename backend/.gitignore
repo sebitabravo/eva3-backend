@@ -1,4 +1,7 @@
 __pycache__/
 venv/
 .ipynb_checkpoints/
-*.ipynb~ 
+*.ipynb~
+.env
+.env.local
+db.sqlite3
