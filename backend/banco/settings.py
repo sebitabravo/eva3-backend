@@ -30,9 +30,12 @@ load_dotenv()
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'valor_por_defecto')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+
+# MODO DEMO: Para portafolio público (solo lectura)
+DEMO_MODE = os.getenv('DEMO_MODE', 'False') == 'True'
 
 
 # Application definition
@@ -45,11 +48,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'clientes',
+    'clientes_templates',
     'rest_framework',
     'django_filters',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
-    'coreapi',
+    'drf_spectacular',
 ]
 
 REST_FRAMEWORK = {
@@ -59,7 +64,22 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend'
     ],
-    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '30/hour',         # Lectura pública muy limitada
+        'user': '10000/hour',      # Usuarios autenticados - aumentado para dashboard
+        'burst': '100/min',        # Prevención de ráfagas - aumentado
+        'read': '30/hour',         # Operaciones GET públicas
+        'write': '1000/hour',      # Operaciones de escritura (admin only)
+        'stats': '500/hour',       # Endpoints de estadísticas - aumentado
+    },
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'MAX_PAGE_SIZE': 100,
 }
 
 
@@ -70,15 +90,50 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
 }
 
+# DRF Spectacular Settings (Swagger/OpenAPI)
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'EVA3 - Sistema de Gestión de Clientes Bancarios API',
+    'DESCRIPTION': '''
+    API RESTful completa para gestión de clientes bancarios.
+    
+    ## Características
+    - **Autenticación JWT**: Access y Refresh tokens
+    - **CRUD Completo**: Crear, leer, actualizar y eliminar clientes
+    - **Filtros Avanzados**: Por género, estado activo y nivel de satisfacción
+    - **Estadísticas**: Métricas de negocio y análisis de datos
+    - **Rate Limiting**: Protección contra abuso y DDoS
+    - **Paginación**: Hasta 100 resultados por página
+    
+    ## Autenticación
+    Obtén tu token en `/api/token/` con username y password.
+    Usa el token en el header: `Authorization: Bearer {token}`
+    ''',
+    'VERSION': '3.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/',
+    'SWAGGER_UI_SETTINGS': {
+        'deepLinking': True,
+        'persistAuthorization': True,
+        'displayOperationId': True,
+        'filter': True,
+    },
+    'SERVERS': [
+        {'url': 'http://localhost:8000', 'description': 'Desarrollo'},
+        {'url': 'http://localhost:8000', 'description': 'Producción'},
+    ],
+}
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'banco.middleware.DemoModeMiddleware',  # Protección para modo demo
 ]
 
 ROOT_URLCONF = 'banco.urls'
@@ -105,12 +160,41 @@ WSGI_APPLICATION = 'banco.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Soporte para PostgreSQL en producción y SQLite en desarrollo
+import dj_database_url
+
+# Leer variables de entorno para la base de datos
+DB_ENGINE = os.getenv('DB_ENGINE', 'postgresql')
+DB_NAME = os.getenv('DB_NAME', 'banco_db')
+DB_USER = os.getenv('DB_USER', 'banco_user')
+DB_PASSWORD = os.getenv('DB_PASSWORD', '')
+DB_HOST = os.getenv('DB_HOST', 'localhost')
+DB_PORT = os.getenv('DB_PORT', '5432')
+
+if DB_ENGINE == 'postgresql' and DB_PASSWORD:
+    # PostgreSQL (Producción)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': DB_NAME,
+            'USER': DB_USER,
+            'PASSWORD': DB_PASSWORD,
+            'HOST': DB_HOST,
+            'PORT': DB_PORT,
+            'CONN_MAX_AGE': 600,
+            'OPTIONS': {
+                'connect_timeout': 10,
+            }
+        }
     }
-}
+else:
+    # SQLite (Desarrollo local)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
@@ -155,6 +239,69 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Habilitar CORS
-CORS_ALLOW_ALL_ORIGINS = True
+# Configuración de CORS - Control de acceso por origen
+# El frontend del contenedor tiene acceso completo a la API
+# Otros orígenes tienen solo acceso de lectura (GET)
+
+# Lista de orígenes del frontend del contenedor que tienen acceso completo
+FRONTEND_CONTAINER_ORIGINS = [
+    'http://localhost:5173',  # Desarrollo local
+    'http://127.0.0.1:5173',  # Desarrollo local alternativo
+    os.getenv('FRONTEND_URL', 'http://localhost:5173'),  # Producción desde .env
+]
+
+# Permitir todos los orígenes para lectura, pero solo el frontend del contenedor
+# puede hacer operaciones de escritura (POST/PUT/PATCH/DELETE)
+CORS_ALLOWED_ORIGINS = FRONTEND_CONTAINER_ORIGINS + [
+    'http://localhost:3000',  # Otros clientes de desarrollo
+    'http://127.0.0.1:3000',
+]
+
+# En desarrollo permitir todos los orígenes para facilitar testing
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOW_ALL_ORIGINS = False
+    # En producción, usar lista específica
+    CORS_ALLOWED_ORIGINS = FRONTEND_CONTAINER_ORIGINS
+
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+# Configuración de seguridad para producción
+if not DEBUG:
+    # HTTPS/SSL settings
+    SECURE_SSL_REDIRECT = False  # Dokploy maneja SSL con su proxy
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
+    # Security headers
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # Proxy settings (para Dokploy/Nginx)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    USE_X_FORWARDED_HOST = True
+    USE_X_FORWARDED_PORT = True

@@ -16,16 +16,22 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from rest_framework.documentation import include_docs_urls
 from rest_framework_simplejwt import views as jwt_views
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/token/', jwt_views.TokenObtainPairView.as_view(),
-         name='token_obtain_pair'),
-    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(),
-         name='token_refresh'),
+    
+    # JWT Authentication
+    path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # API Endpoints
     path('api/v1/', include('clientes.urls')),
     path('api/v2/', include('clientes_templates.urls')),
-    path('docs/', include_docs_urls(title='Documentacion API Banco')),
+    
+    # API Documentation (Swagger/OpenAPI)
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
