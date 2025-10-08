@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Clientes{% endblock %}
+
+{% block content %}
+<h1>Lista de Clientes</h1>
+
+<form method="get"></form>
+
+<a href="{% url 'cliente_create' %}" class="btn">Agregar Nuevo Cliente</a>
+<table border="1" class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Edad</th>
+            <th>Género</th>
+            <th>Saldo</th>
+            <th>Activo</th>
+            <th>Nivel de Satisfacción</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cliente in object_list %}
+            <tr>
+                <td>{{ cliente.pk }}</td>
+                <td>{{ cliente.edad }}</td>
+                <td>{{ cliente.get_genero_display }}</td>
+                <td>${{ cliente.saldo }}</td>
+                <td>{{ cliente.activo|yesno:"Sí,No" }}</td>
+                <td>{{ cliente.nivel_de_satisfaccion }}</td>
+                <td>
+                    <a href="{% url 'cliente_update' cliente.pk %}">Editar</a> |
+                    <a href="{% url 'cliente_delete' cliente.pk %}">Eliminar</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7">No hay clientes registrados.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
