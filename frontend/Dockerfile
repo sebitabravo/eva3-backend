@@ -15,6 +15,9 @@ WORKDIR /app
 # Copiar archivos de dependencias primero (mejor caché)
 COPY package*.json ./
 
+# Actualizar npm a la última versión
+RUN npm install -g npm@latest
+
 # Instalar dependencias
 RUN npm install
 
