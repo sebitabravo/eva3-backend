@@ -22,6 +22,7 @@ class DemoModeMiddleware:
     ALLOWED_POST_PATHS = [
         '/api/token/',
         '/api/token/refresh/',
+        '/api/v1/auth/login/',  # Añadido para el frontend
     ]
         
     def __call__(self, request):
