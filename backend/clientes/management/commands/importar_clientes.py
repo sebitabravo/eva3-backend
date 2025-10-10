@@ -1,4 +1,5 @@
 import pandas as pd
+from decimal import Decimal, ROUND_HALF_UP
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 from clientes.models import Cliente
@@ -63,13 +64,21 @@ class Command(BaseCommand):
                     skip_count += 1
                     continue
 
+                # Convertir saldo a Decimal con exactamente 2 decimales
+                # Esto evita problemas de precisión de punto flotante
+                saldo_raw = float(row['Saldo'])
+                saldo_decimal = Decimal(str(saldo_raw)).quantize(
+                    Decimal('0.01'),
+                    rounding=ROUND_HALF_UP
+                )
+
                 # Crear cliente
                 Cliente.objects.create(
                     cliente_id=cliente_id,
                     usuario=admin_user,
                     edad=int(row['Edad']),
                     genero=genero,
-                    saldo=float(row['Saldo']),
+                    saldo=saldo_decimal,
                     activo=activo,
                     nivel_de_satisfaccion=int(row['Nivel_de_Satisfaccion'])
                 )
