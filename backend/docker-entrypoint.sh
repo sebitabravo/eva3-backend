@@ -7,26 +7,31 @@ echo "🚀 Iniciando aplicación Django..."
 echo "⏳ Esperando a PostgreSQL..."
 export DATABASE_HOST=${DB_HOST:-db}
 export DATABASE_PORT=${DB_PORT:-5432}
+export DATABASE_USER=${DB_USER:-banco_user}
 
-# Intentar con nc primero, si falla usar un método alternativo
-if command -v nc &> /dev/null; then
-    echo "Usando netcat para verificar conexión..."
-    while ! nc -z $DATABASE_HOST $DATABASE_PORT; do
-        echo "Esperando PostgreSQL en $DATABASE_HOST:$DATABASE_PORT..."
-        sleep 1
-    done
-else
-    echo "Usando método alternativo para verificar conexión..."
-    for i in {1..30}; do
-        if pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U ${DB_USER:-banco_user} > /dev/null 2>&1; then
-            break
-        fi
-        echo "Esperando PostgreSQL en $DATABASE_HOST:$DATABASE_PORT... (intento $i/30)"
-        sleep 1
-    done
-fi
+# Usar pg_isready que es más confiable
+echo "Verificando conexión a PostgreSQL..."
+MAX_TRIES=30
+COUNTER=0
+
+until pg_isready -h $DATABASE_HOST -p $DATABASE_PORT -U $DATABASE_USER > /dev/null 2>&1; do
+    COUNTER=$((COUNTER+1))
+    if [ $COUNTER -gt $MAX_TRIES ]; then
+        echo "❌ Error: No se pudo conectar a PostgreSQL después de $MAX_TRIES intentos"
+        echo "   Host: $DATABASE_HOST"
+        echo "   Port: $DATABASE_PORT"
+        echo "   User: $DATABASE_USER"
+        exit 1
+    fi
+    echo "Esperando PostgreSQL... (intento $COUNTER/$MAX_TRIES)"
+    sleep 2
+done
 
 echo "✅ PostgreSQL está listo!"
+
+# Crear migraciones automáticamente si hay cambios en modelos
+echo "🔍 Detectando cambios en modelos..."
+python manage.py makemigrations --noinput
 
 # Ejecutar migraciones
 echo "🔄 Ejecutando migraciones..."
