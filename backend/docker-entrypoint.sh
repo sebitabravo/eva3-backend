@@ -54,23 +54,66 @@ else:
     print(f"ℹ️  Superusuario '{username}' ya existe")
 END
 
-# Importar datos desde CSV en producción (si existe el archivo y la DB está vacía)
+# ============================================================================
+# IMPORTACIÓN INTELIGENTE DE DATOS CON AUTO-CORRECCIÓN
+# ============================================================================
 CSV_FILE="clientes_limpios.csv"
 if [ -f "$CSV_FILE" ]; then
-    echo "📊 Verificando datos en la base de datos..."
-    
-    # Contar clientes existentes
+    echo "📊 Verificando integridad de datos..."
+
+    # Contar registros en el CSV (excluyendo header)
+    CSV_COUNT=$(tail -n +2 "$CSV_FILE" | wc -l | tr -d ' ')
+
+    # Contar clientes en la base de datos
     CLIENTE_COUNT=$(python manage.py shell -c "from clientes.models import Cliente; print(Cliente.objects.count())")
-    
+
+    echo "   CSV esperado: $CSV_COUNT registros"
+    echo "   DB actual:    $CLIENTE_COUNT clientes"
+
+    # Calcular si hay una diferencia significativa (más de 10% de diferencia)
     if [ "$CLIENTE_COUNT" = "0" ]; then
         echo "📥 Base de datos vacía. Importando datos desde $CSV_FILE..."
         python manage.py importar_clientes "$CSV_FILE"
+
+    elif [ "$CLIENTE_COUNT" -lt "$((CSV_COUNT * 90 / 100))" ]; then
+        # Si hay menos del 90% de los datos esperados, hay un problema
+        echo "⚠️  DATOS INCOMPLETOS DETECTADOS!"
+        echo "   Solo se importaron $CLIENTE_COUNT de $CSV_COUNT registros esperados"
+        echo "   Esto indica un problema en la importación anterior"
+        echo ""
+        echo "🔧 Auto-corrección: Limpiando y re-importando datos..."
+
+        # Limpiar datos corruptos
+        python manage.py shell << 'CLEANUP_SCRIPT'
+from clientes.models import Cliente
+count = Cliente.objects.count()
+if count > 0:
+    print(f"   Eliminando {count} registros incorrectos...")
+    Cliente.objects.all().delete()
+    print("   ✅ Limpieza completada")
+CLEANUP_SCRIPT
+
+        # Re-importar con el script corregido
+        echo "   📥 Re-importando datos con el script corregido..."
+        python manage.py importar_clientes "$CSV_FILE"
+
+        # Verificar resultado
+        NEW_COUNT=$(python manage.py shell -c "from clientes.models import Cliente; print(Cliente.objects.count())")
+        echo ""
+        if [ "$NEW_COUNT" -ge "$((CSV_COUNT * 95 / 100))" ]; then
+            echo "✅ Auto-corrección exitosa: $NEW_COUNT clientes importados"
+        else
+            echo "⚠️  Auto-corrección parcial: $NEW_COUNT de $CSV_COUNT clientes importados"
+            echo "   Revisa los logs para más detalles"
+        fi
+
     else
-        echo "ℹ️  Base de datos ya contiene $CLIENTE_COUNT clientes. Omitiendo importación."
+        echo "✅ Datos completos: $CLIENTE_COUNT clientes (de $CSV_COUNT esperados)"
     fi
 else
     echo "⚠️  Archivo $CSV_FILE no encontrado. Continuando sin datos iniciales."
 fi
+echo "============================================================================"
 
 # Colectar archivos estáticos
 echo "📦 Recolectando archivos estáticos..."

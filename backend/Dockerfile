@@ -1,11 +1,12 @@
 # Multi-stage build para optimizar tamaño de imagen
-FROM python:3.12-slim as builder
+FROM python:3.12-slim AS builder
 
-# Variables de entorno para Python
+# Variables de entorno para Python y Debian
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
@@ -18,14 +19,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copiar y instalar dependencias de Python
 COPY requirements.txt .
-RUN pip install --user -r requirements.txt
+RUN pip install --user --no-warn-script-location -r requirements.txt
 
 # Etapa final
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PATH=/root/.local/bin:$PATH
+    PATH=/root/.local/bin:$PATH \
+    DEBIAN_FRONTEND=noninteractive
 
 WORKDIR /app
 
