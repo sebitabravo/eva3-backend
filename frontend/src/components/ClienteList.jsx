@@ -240,17 +240,17 @@ function ClienteList({ token, clientesCache, fetchClientes, onUpdate }) {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-3xl font-bold text-gray-900">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
             Lista de Clientes
           </h2>
-          <p className="text-gray-500 mt-1">
+          <p className="text-sm sm:text-base text-gray-500 mt-1">
             Gestiona y visualiza toda la información de tus clientes
           </p>
         </div>
-        <Button onClick={openCreateModal} className="gap-2">
+        <Button onClick={openCreateModal} className="gap-2 w-full sm:w-auto" size="sm">
           <Plus className="h-4 w-4" />
           Nuevo Cliente
         </Button>
@@ -345,77 +345,162 @@ function ClienteList({ token, clientesCache, fetchClientes, onUpdate }) {
           ) : (
             <Card>
               <CardHeader>
-                <CardTitle>Clientes Registrados</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-lg sm:text-xl">Clientes Registrados</CardTitle>
+                <CardDescription className="text-sm">
                   Listado completo de todos los clientes del sistema
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>ID</TableHead>
-                      <TableHead>Edad</TableHead>
-                      <TableHead>Género</TableHead>
-                      <TableHead>Saldo</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Satisfacción</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+              <CardContent className="p-0 sm:p-6">
+                {/* Mobile Card View */}
+                <div className="block sm:hidden">
+                  <div className="divide-y divide-gray-200">
                     {clientes.map((cliente) => (
-                      <TableRow 
+                      <div
                         key={cliente.cliente_id}
-                        className={isAtRisk(cliente.nivel_de_satisfaccion) ? 'bg-red-50' : ''}
+                        className={`p-4 ${isAtRisk(cliente.nivel_de_satisfaccion) ? 'bg-red-50' : ''}`}
                       >
-                        <TableCell className="font-medium">
+                        {/* Header */}
+                        <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
                             {isAtRisk(cliente.nivel_de_satisfaccion) && (
-                              <AlertTriangle className="h-4 w-4 text-red-600" title="Cliente en riesgo" />
+                              <AlertTriangle className="h-4 w-4 text-red-600" />
                             )}
-                            {cliente.cliente_id}
+                            <span className="font-semibold text-lg">ID: {cliente.cliente_id}</span>
                           </div>
-                        </TableCell>
-                        <TableCell>{cliente.edad}</TableCell>
-                        <TableCell>{getGeneroDisplay(cliente.genero)}</TableCell>
-                        <TableCell className="font-semibold">
-                          ${parseFloat(cliente.saldo).toFixed(2)}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={cliente.activo ? "default" : "secondary"}>
-                            {cliente.activo ? 'Activo' : 'Inactivo'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={getSatisfactionBadge(cliente.nivel_de_satisfaccion)}>
-                            {getSatisfactionDisplay(cliente.nivel_de_satisfaccion)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button 
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={() => openEditModal(cliente)}
-                              variant="ghost"
-                              size="icon"
-                              title="Editar"
+                              className="h-8 w-8 p-0"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="h-3.5 w-3.5" />
                             </Button>
-                            <Button 
+                            <Button
+                              variant="outline"
+                              size="sm"
                               onClick={() => handleDeleteCliente(cliente.cliente_id)}
-                              variant="ghost"
-                              size="icon"
-                              title="Eliminar"
+                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                             >
-                              <Trash2 className="h-4 w-4 text-red-500" />
+                              <Trash2 className="h-3.5 w-3.5" />
                             </Button>
                           </div>
-                        </TableCell>
-                      </TableRow>
+                        </div>
+
+                        {/* Info Grid */}
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <span className="text-gray-500">Edad:</span>
+                            <span className="ml-2 font-medium">{cliente.edad}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Género:</span>
+                            <span className="ml-2 font-medium">{cliente.genero === 'M' ? 'Masculino' : 'Femenino'}</span>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-gray-500">Saldo:</span>
+                            <span className="ml-2 font-semibold text-green-600">${parseFloat(cliente.saldo).toFixed(2)}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Estado:</span>
+                            <span className="ml-2">
+                              <Badge variant={cliente.activo ? "default" : "secondary"} className="text-xs">
+                                {cliente.activo ? 'Activo' : 'Inactivo'}
+                              </Badge>
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Satisfacción:</span>
+                            <span className="ml-2">
+                              <Badge
+                                variant={getSatisfactionBadge(cliente.nivel_de_satisfaccion)}
+                                className="text-xs"
+                              >
+                                {getSatisfactionDisplay(cliente.nivel_de_satisfaccion)}
+                              </Badge>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     ))}
-                  </TableBody>
-                </Table>
+                  </div>
+                </div>
+
+                {/* Desktop Table View */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <div className="inline-block min-w-full align-middle">
+                    <div className="overflow-hidden">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="whitespace-nowrap">ID</TableHead>
+                            <TableHead className="whitespace-nowrap">Edad</TableHead>
+                            <TableHead className="whitespace-nowrap">Género</TableHead>
+                            <TableHead className="whitespace-nowrap">Saldo</TableHead>
+                            <TableHead className="whitespace-nowrap hidden md:table-cell">Estado</TableHead>
+                            <TableHead className="whitespace-nowrap">Satisfacción</TableHead>
+                            <TableHead className="text-right whitespace-nowrap">Acciones</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {clientes.map((cliente) => (
+                            <TableRow
+                              key={cliente.cliente_id}
+                              className={isAtRisk(cliente.nivel_de_satisfaccion) ? 'bg-red-50' : ''}
+                            >
+                              <TableCell className="font-medium whitespace-nowrap">
+                                <div className="flex items-center gap-1.5">
+                                  {isAtRisk(cliente.nivel_de_satisfaccion) && (
+                                    <AlertTriangle className="h-4 w-4 text-red-600" title="Cliente en riesgo" />
+                                  )}
+                                  <span className="text-sm">{cliente.cliente_id}</span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-sm">{cliente.edad}</TableCell>
+                              <TableCell className="hidden sm:table-cell text-sm">{getGeneroDisplay(cliente.genero)}</TableCell>
+                              <TableCell className="font-semibold whitespace-nowrap text-sm">
+                                ${parseFloat(cliente.saldo).toFixed(2)}
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">
+                                <Badge variant={cliente.activo ? "default" : "secondary"} className="text-xs">
+                                  {cliente.activo ? 'Activo' : 'Inactivo'}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant={getSatisfactionBadge(cliente.nivel_de_satisfaccion)} className="text-xs whitespace-nowrap">
+                                  <span className="hidden sm:inline">{getSatisfactionDisplay(cliente.nivel_de_satisfaccion)}</span>
+                                  <span className="sm:hidden">{cliente.nivel_de_satisfaccion}/5</span>
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="flex justify-end gap-1 sm:gap-2">
+                                  <Button
+                                    onClick={() => openEditModal(cliente)}
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    title="Editar"
+                                  >
+                                    <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                                  </Button>
+                                  <Button
+                                    onClick={() => handleDeleteCliente(cliente.cliente_id)}
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8"
+                                    title="Eliminar"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}

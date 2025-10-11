@@ -101,65 +101,67 @@ function ClientHealth({ token, clientesCache, fetchClientes }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900">Salud del Cliente</h2>
-        <p className="text-gray-500 mt-1">Identificación y seguimiento de clientes en riesgo</p>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Salud del Cliente</h2>
+        <p className="text-sm sm:text-base text-gray-500 mt-1">Identificación y seguimiento de clientes en riesgo</p>
       </div>
 
       {/* Risk Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-600">
               Clientes en Riesgo
             </CardTitle>
-            <UserX className="h-4 w-4 text-red-500" />
+            <UserX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500 flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-red-600">{stats.totalRisk}</div>
-            <p className="text-xs text-gray-500 mt-1">
+          <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-red-600">{stats.totalRisk}</div>
+            <p className="text-xs text-gray-500 mt-1 hidden sm:block">
               {((stats.totalRisk / clientes.length) * 100).toFixed(1)}% del total
             </p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-600">
               Riesgo Alto
             </CardTitle>
-            <AlertTriangle className="h-4 w-4 text-red-600" />
+            <AlertTriangle className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600 flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-red-700">{stats.highRisk}</div>
-            <p className="text-xs text-gray-500 mt-1">Muy insatisfechos</p>
+          <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-red-700">{stats.highRisk}</div>
+            <p className="text-xs text-gray-500 mt-1 hidden sm:block">Muy insatisfechos</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-600">
               Riesgo Medio
             </CardTitle>
-            <TrendingDown className="h-4 w-4 text-orange-500" />
+            <TrendingDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-orange-600">{stats.mediumRisk}</div>
-            <p className="text-xs text-gray-500 mt-1">Insatisfechos</p>
+          <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-orange-600">{stats.mediumRisk}</div>
+            <p className="text-xs text-gray-500 mt-1 hidden sm:block">Insatisfechos</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
+            <CardTitle className="text-xs sm:text-sm font-medium text-gray-600">
               Valor en Riesgo
             </CardTitle>
-            <TrendingDown className="h-4 w-4 text-purple-500" />
+            <TrendingDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-purple-500 flex-shrink-0" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-purple-600">${stats.totalValue}</div>
-            <p className="text-xs text-gray-500 mt-1">Saldo total en riesgo</p>
+          <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-600">${stats.totalValue}</div>
+            <p className="text-xs text-gray-500 mt-1">
+              <span className="hidden sm:inline">Saldo total en </span>riesgo
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -186,21 +188,21 @@ function ClientHealth({ token, clientesCache, fetchClientes }) {
 
       {/* Risk Clients Table */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+        <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <CardTitle>Clientes en Riesgo</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-base sm:text-lg">Clientes en Riesgo</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 Lista de clientes con satisfacción muy baja que requieren atención
               </CardDescription>
             </div>
-            <Button onClick={fetchClientes} variant="outline" size="sm" className="gap-2">
-              <RefreshCcw className="h-4 w-4" />
-              Actualizar
+            <Button onClick={fetchClientes} variant="outline" size="sm" className="gap-1.5 sm:gap-2 w-full sm:w-auto">
+              <RefreshCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <span className="text-xs sm:text-sm">Actualizar</span>
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-6">
           {riskClientes.length === 0 ? (
             <div className="text-center py-12">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
@@ -214,67 +216,145 @@ function ClientHealth({ token, clientesCache, fetchClientes }) {
               </p>
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>ID</TableHead>
-                  <TableHead>Nivel de Riesgo</TableHead>
-                  <TableHead>Satisfacción</TableHead>
-                  <TableHead>Edad</TableHead>
-                  <TableHead>Género</TableHead>
-                  <TableHead>Saldo</TableHead>
-                  <TableHead>Estado</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {riskClientes.map((cliente) => (
-                  <TableRow 
-                    key={cliente.cliente_id}
-                    className={getRiskLevel(cliente.nivel_de_satisfaccion) === 'high' ? 'bg-red-50' : 'bg-orange-50'}
-                  >
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {getRiskLevel(cliente.nivel_de_satisfaccion) === 'high' && (
-                          <AlertTriangle className="h-4 w-4 text-red-600" />
-                        )}
-                        {cliente.cliente_id}
+            <>
+              {/* Mobile Card View */}
+              <div className="block sm:hidden">
+                <div className="divide-y divide-gray-200">
+                  {riskClientes.map((cliente) => (
+                    <div
+                      key={cliente.cliente_id}
+                      className={`p-4 ${getRiskLevel(cliente.nivel_de_satisfaccion) === 'high' ? 'bg-red-50' : 'bg-orange-50'}`}
+                    >
+                      {/* Header con ID y Nivel de Riesgo */}
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          {getRiskLevel(cliente.nivel_de_satisfaccion) === 'high' && (
+                            <AlertTriangle className="h-4 w-4 text-red-600" />
+                          )}
+                          <span className="font-semibold text-lg">ID: {cliente.cliente_id}</span>
+                        </div>
+                        {getRiskBadge(cliente.nivel_de_satisfaccion)}
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      {getRiskBadge(cliente.nivel_de_satisfaccion)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline" className="bg-white">
-                        {getSatisfactionText(cliente.nivel_de_satisfaccion)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{cliente.edad} años</TableCell>
-                    <TableCell>{cliente.genero === 'M' ? 'Masculino' : 'Femenino'}</TableCell>
-                    <TableCell className="font-semibold">
-                      ${parseFloat(cliente.saldo).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={cliente.activo ? "default" : "secondary"}>
-                        {cliente.activo ? 'Activo' : 'Inactivo'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Mail className="h-3 w-3" />
+
+                      {/* Info Grid */}
+                      <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+                        <div>
+                          <span className="text-gray-500">Satisfacción:</span>
+                          <span className="ml-2">
+                            <Badge variant="outline" className="bg-white text-xs">
+                              {getSatisfactionText(cliente.nivel_de_satisfaccion)}
+                            </Badge>
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Edad:</span>
+                          <span className="ml-2 font-medium">{cliente.edad} años</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Género:</span>
+                          <span className="ml-2 font-medium">{cliente.genero === 'M' ? 'Masculino' : 'Femenino'}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Estado:</span>
+                          <span className="ml-2">
+                            <Badge variant={cliente.activo ? "default" : "secondary"} className="text-xs">
+                              {cliente.activo ? 'Activo' : 'Inactivo'}
+                            </Badge>
+                          </span>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-gray-500">Saldo:</span>
+                          <span className="ml-2 font-semibold text-green-600">
+                            ${parseFloat(cliente.saldo).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Acciones */}
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" className="gap-2 flex-1">
+                          <Mail className="h-3.5 w-3.5" />
                           Contactar
                         </Button>
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <Phone className="h-3 w-3" />
+                        <Button variant="outline" size="sm" className="gap-2 flex-1">
+                          <Phone className="h-3.5 w-3.5" />
                           Llamar
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden sm:block overflow-x-auto">
+                <div className="inline-block min-w-full align-middle">
+                  <div className="overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="whitespace-nowrap">ID</TableHead>
+                          <TableHead className="whitespace-nowrap">Riesgo</TableHead>
+                          <TableHead className="whitespace-nowrap">Satisfacción</TableHead>
+                          <TableHead className="whitespace-nowrap hidden md:table-cell">Edad</TableHead>
+                          <TableHead className="whitespace-nowrap hidden md:table-cell">Género</TableHead>
+                          <TableHead className="whitespace-nowrap">Saldo</TableHead>
+                          <TableHead className="whitespace-nowrap hidden lg:table-cell">Estado</TableHead>
+                          <TableHead className="text-right whitespace-nowrap">Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {riskClientes.map((cliente) => (
+                          <TableRow
+                            key={cliente.cliente_id}
+                            className={getRiskLevel(cliente.nivel_de_satisfaccion) === 'high' ? 'bg-red-50' : 'bg-orange-50'}
+                          >
+                            <TableCell className="font-medium whitespace-nowrap">
+                              <div className="flex items-center gap-1.5">
+                                {getRiskLevel(cliente.nivel_de_satisfaccion) === 'high' && (
+                                  <AlertTriangle className="h-4 w-4 text-red-600" />
+                                )}
+                                <span className="text-sm">{cliente.cliente_id}</span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              {getRiskBadge(cliente.nivel_de_satisfaccion)}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="bg-white text-xs">
+                                {getSatisfactionText(cliente.nivel_de_satisfaccion)}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell text-sm">{cliente.edad} años</TableCell>
+                            <TableCell className="hidden md:table-cell text-sm">{cliente.genero === 'M' ? 'M' : 'F'}</TableCell>
+                            <TableCell className="font-semibold whitespace-nowrap text-sm">
+                              ${parseFloat(cliente.saldo).toFixed(2)}
+                            </TableCell>
+                            <TableCell className="hidden lg:table-cell">
+                              <Badge variant={cliente.activo ? "default" : "secondary"} className="text-xs">
+                                {cliente.activo ? 'Activo' : 'Inactivo'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-1">
+                                <Button variant="outline" size="sm" className="gap-1 h-8 px-2">
+                                  <Mail className="h-3.5 w-3.5" />
+                                  <span className="hidden lg:inline text-xs">Contactar</span>
+                                </Button>
+                                <Button variant="outline" size="sm" className="gap-1 h-8 px-2">
+                                  <Phone className="h-3.5 w-3.5" />
+                                  <span className="hidden lg:inline text-xs">Llamar</span>
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
