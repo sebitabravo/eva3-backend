@@ -68,6 +68,31 @@ function App() {
   
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Efecto para login automático en modo demo
+  useEffect(() => {
+    const performDemoLogin = async () => {
+      if (DEMO_MODE && !token) {
+        console.log('✨ Modo Demo activado, iniciando sesión automáticamente...');
+        try {
+          const response = await axios.post(`${API_URL.replace('/api/v1', '')}/api/token/`, {
+            username: 'demo',
+            password: 'demo2024'
+          });
+          
+          const accessToken = response.data.access;
+          localStorage.setItem('token', accessToken);
+          setToken(accessToken);
+          console.log('✅ Login automático exitoso en modo demo');
+        } catch (err) {
+          console.error('❌ Error en login automático demo:', err);
+          console.error('Detalles:', err.response?.data);
+        }
+      }
+    };
+    
+    performDemoLogin();
+  }, [DEMO_MODE, token]);
+
   // Función para cargar clientes (usada por todas las vistas)
   const fetchClientes = useCallback(async (forceRefresh = false) => {
     // Si tenemos caché válido y no es forzado, usar caché
@@ -133,7 +158,7 @@ function App() {
     setLoginError('');
     
     try {
-      const response = await axios.post('http://localhost:8000/api/token/', {
+      const response = await axios.post(`${API_URL.replace('/api/v1', '')}/api/token/`, {
         username,
         password
       });
