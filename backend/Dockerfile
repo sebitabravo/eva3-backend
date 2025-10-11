@@ -48,6 +48,9 @@ COPY . .
 RUN mkdir -p /app/staticfiles /app/media /app/logs && \
     chmod -R 755 /app/staticfiles /app/media /app/logs
 
+# Dar permisos de escritura para collectstatic
+RUN chmod -R 777 /app/staticfiles
+
 # Exponer puerto
 EXPOSE 8000
 
