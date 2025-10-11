@@ -24,6 +24,14 @@ RUN npm install
 # Copiar todo el código
 COPY . .
 
+# ARG para recibir variables de entorno en build time
+ARG VITE_API_URL
+ARG VITE_DEMO_MODE
+
+# Exportar como variables de entorno para que Vite las use
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_DEMO_MODE=$VITE_DEMO_MODE
+
 # Build para producción
 RUN npm run build
 

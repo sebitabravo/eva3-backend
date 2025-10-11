@@ -54,6 +54,14 @@ else:
     print(f"ℹ️  Superusuario '{username}' ya existe")
 END
 
+# Crear usuario demo si DEMO_MODE está activado
+if [ "${DEMO_MODE:-False}" = "True" ]; then
+    echo "🎭 Modo DEMO activado - Creando usuario demo..."
+    python manage.py create_demo_user
+else
+    echo "ℹ️  Modo DEMO desactivado"
+fi
+
 # ============================================================================
 # IMPORTACIÓN INTELIGENTE DE DATOS CON AUTO-CORRECCIÓN
 # ============================================================================
