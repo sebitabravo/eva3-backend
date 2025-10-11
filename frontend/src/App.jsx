@@ -306,20 +306,23 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Demo Mode Banner */}
       {DEMO_MODE && (
-        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 px-4 text-center text-sm font-medium shadow-md">
-          <div className="flex items-center justify-center gap-2">
-            <Eye className="h-4 w-4" />
-            <span>
-              Modo Demostración Activo - Solo lectura | Las operaciones de escritura están deshabilitadas para proteger el proyecto
-            </span>
-            <a 
-              href="https://github.com/sebitabravo/eva3-backend" 
-              target="_blank" 
+        <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 px-3 sm:px-4 text-center text-xs sm:text-sm font-medium shadow-md">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <Eye className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm">
+                Modo Demo - Solo lectura
+              </span>
+            </div>
+            <a
+              href="https://github.com/sebitabravo/eva3-backend"
+              target="_blank"
               rel="noopener noreferrer"
-              className="ml-4 underline hover:text-amber-100 flex items-center gap-1"
+              className="underline hover:text-amber-100 flex items-center gap-1 text-xs sm:text-sm"
             >
-              <Github className="h-3 w-3" />
-              Ver en GitHub
+              <Github className="h-3 w-3 flex-shrink-0" />
+              <span className="hidden sm:inline">Ver en GitHub</span>
+              <span className="sm:hidden">GitHub</span>
             </a>
           </div>
         </div>
@@ -327,19 +330,22 @@ function App() {
       
       {/* Top Navigation Bar */}
       <nav className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-8">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg"></div>
-                <span className="text-xl font-bold text-gray-900">Sistema de Clientes</span>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+          <div className="flex items-center justify-between h-14 sm:h-16">
+            <div className="flex items-center gap-3 sm:gap-8 min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex-shrink-0"></div>
+                <span className="text-sm sm:text-xl font-bold text-gray-900 truncate">
+                  <span className="hidden sm:inline">Sistema de Clientes</span>
+                  <span className="sm:hidden">Clientes</span>
+                </span>
                 {DEMO_MODE && (
-                  <span className="ml-2 px-2 py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full">
+                  <span className="hidden xs:inline ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 sm:py-1 text-xs font-semibold bg-amber-100 text-amber-800 rounded-full flex-shrink-0">
                     DEMO
                   </span>
                 )}
               </div>
-              
+
               <div className="hidden md:flex items-center gap-2">
                 {navItems.map((item) => {
                   const Icon = item.icon;
@@ -358,7 +364,7 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
               {/* Cache status indicator */}
               {cacheTimestamp && (
                 <div className="hidden lg:flex items-center gap-2 text-xs text-gray-500 px-2 py-1 bg-gray-50 rounded-md border border-gray-200">
@@ -368,24 +374,24 @@ function App() {
                   </span>
                 </div>
               )}
-              
-              <Button 
-                onClick={handleRefresh} 
-                variant="outline" 
-                size="sm" 
-                className="gap-2"
+
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                size="sm"
+                className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3"
                 disabled={isRefreshing}
                 title="Actualizar datos del servidor"
               >
-                <RefreshCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">
+                <RefreshCcw className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline text-xs sm:text-sm">
                   {isRefreshing ? 'Actualizando...' : 'Actualizar'}
                 </span>
               </Button>
-              
-              <Button onClick={handleLogout} variant="outline" className="gap-2">
-                <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Cerrar Sesión</span>
+
+              <Button onClick={handleLogout} variant="outline" size="sm" className="gap-1 sm:gap-2 h-8 sm:h-9 px-2 sm:px-3">
+                <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline text-xs sm:text-sm">Cerrar Sesión</span>
               </Button>
             </div>
           </div>
@@ -393,8 +399,8 @@ function App() {
       </nav>
 
       {/* Mobile Navigation */}
-      <div className="md:hidden bg-white border-b border-gray-200 px-4 py-2">
-        <div className="flex items-center gap-2 overflow-x-auto">
+      <div className="md:hidden bg-white border-b border-gray-200 px-2 sm:px-4 py-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 -mb-1 scrollbar-hide">
           {navItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -403,10 +409,10 @@ function App() {
                 onClick={() => setCurrentView(item.id)}
                 variant={currentView === item.id ? "default" : "ghost"}
                 size="sm"
-                className="gap-2 whitespace-nowrap"
+                className="gap-1.5 whitespace-nowrap flex-shrink-0 h-8 px-2.5 sm:px-3 text-xs sm:text-sm"
               >
-                <Icon className="h-4 w-4" />
-                {item.label}
+                <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden xs:inline">{item.label}</span>
               </Button>
             );
           })}
@@ -414,7 +420,7 @@ function App() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto p-6">
+      <main className="max-w-7xl mx-auto p-3 sm:p-4 md:p-6">
         {currentView === 'dashboard' && <Dashboard token={token} clientesCache={clientesCache} fetchClientes={fetchClientes} />}
         {currentView === 'clientes' && <ClienteList token={token} clientesCache={clientesCache} fetchClientes={fetchClientes} onUpdate={handleRefresh} />}
         {currentView === 'analysis' && <AnalysisSegments token={token} clientesCache={clientesCache} fetchClientes={fetchClientes} />}
