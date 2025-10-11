@@ -21,13 +21,28 @@ import {
 } from 'lucide-react';
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+// Obtener configuración de runtime o build time
+const getRuntimeConfig = () => {
+  // Intentar obtener de window.ENV_CONFIG (runtime)
+  if (window.ENV_CONFIG && window.ENV_CONFIG.VITE_API_URL !== '__VITE_API_URL__') {
+    return {
+      apiUrl: window.ENV_CONFIG.VITE_API_URL,
+      demoMode: window.ENV_CONFIG.VITE_DEMO_MODE === 'true'
+    };
+  }
+  // Fallback a variables de build time
+  return {
+    apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
+    demoMode: import.meta.env.VITE_DEMO_MODE === 'true'
+  };
+};
+
+const config = getRuntimeConfig();
+const API_URL = config.apiUrl;
+const DEMO_MODE = config.demoMode;
 
 // Tiempo de caché: 15 minutos (los datos no cambian tan frecuentemente)
 const CACHE_DURATION = 15 * 60 * 1000;
-
-// MODO DEMO: Detectar si estamos en modo demo
-const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true';
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem('token'));

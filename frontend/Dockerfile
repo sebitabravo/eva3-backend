@@ -46,6 +46,13 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copiar configuración de Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
+# Copiar archivo de configuración de runtime (placeholder)
+COPY env-config.js /usr/share/nginx/html/env-config.js
+
+# Copiar script de entrypoint
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
 # Exponer puerto
 EXPOSE 80
 
@@ -53,7 +60,7 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD wget --quiet --tries=1 --spider http://127.0.0.1/ || exit 1
 
-CMD ["nginx", "-g", "daemon off;"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # ===================================
 # Stage: Development
