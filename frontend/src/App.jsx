@@ -27,13 +27,13 @@ const getRuntimeConfig = () => {
   if (window.ENV_CONFIG && window.ENV_CONFIG.VITE_API_URL !== '__VITE_API_URL__') {
     return {
       apiUrl: window.ENV_CONFIG.VITE_API_URL,
-      demoMode: window.ENV_CONFIG.VITE_DEMO_MODE === 'true'
+      demoMode: String(window.ENV_CONFIG.VITE_DEMO_MODE).toLowerCase() === 'true'
     };
   }
   // Fallback a variables de build time
   return {
     apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1',
-    demoMode: import.meta.env.VITE_DEMO_MODE === 'true'
+    demoMode: String(import.meta.env.VITE_DEMO_MODE).toLowerCase() === 'true'
   };
 };
 

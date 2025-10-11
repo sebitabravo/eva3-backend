@@ -15,6 +15,7 @@ from drf_spectacular.types import OpenApiTypes
 from .models import Cliente
 from .serializers import ClienteSerializer
 from .throttling import BurstRateThrottle, ReadOnlyRateThrottle, WriteRateThrottle, StatsRateThrottle
+from .pagination import ClientePagination
 from .permissions import IsOwnerOrAdmin, IsAdminOrReadOnly, CanCreateCliente
 
 
@@ -82,6 +83,7 @@ class ClienteViewSet(viewsets.ModelViewSet):
     serializer_class = ClienteSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['genero', 'activo', 'nivel_de_satisfaccion']
+    pagination_class = ClientePagination
     permission_classes = [IsAdminOrReadOnly]  # GET público, POST/PUT/DELETE admin only
     throttle_classes = [BurstRateThrottle, ReadOnlyRateThrottle, WriteRateThrottle]
 
