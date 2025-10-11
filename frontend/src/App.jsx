@@ -110,9 +110,10 @@ function App() {
       setIsRefreshing(true);
       console.log('🔄 Cargando datos del servidor...');
       const response = await axios.get(`${API_URL}/clientes/`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Bearer ${token}` },
+        params: { page_size: 5000 }  // Solicitar todos los clientes (máx 5000)
       });
-      
+
       const data = Array.isArray(response.data) ? response.data : response.data.results || [];
       
       // Guardar en estado y localStorage
