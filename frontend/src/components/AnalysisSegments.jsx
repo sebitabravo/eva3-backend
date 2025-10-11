@@ -118,20 +118,20 @@ function AnalysisSegments({ token, clientesCache, fetchClientes }) {
   const ageBalanceData = getAgeBalanceData();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div>
-        <h2 className="text-3xl font-bold text-gray-900">Análisis por Segmentos</h2>
-        <p className="text-gray-500 mt-1">Análisis profundo y segmentado de clientes</p>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Análisis por Segmentos</h2>
+        <p className="text-sm sm:text-base text-gray-500 mt-1">Análisis profundo y segmentado de clientes</p>
       </div>
 
       {/* Filters Card */}
       <Card>
-        <CardHeader>
-          <CardTitle>Filtros Interactivos</CardTitle>
-          <CardDescription>Personaliza el análisis con filtros</CardDescription>
+        <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6">
+          <CardTitle className="text-base sm:text-lg">Filtros Interactivos</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">Personaliza el análisis con filtros</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <CardContent className="space-y-4 sm:space-y-6 px-3 sm:px-6 pb-3 sm:pb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
             {/* Age Range Filter */}
             <div className="space-y-2">
               <Label>Rango de Edad: {ageRange[0]} - {ageRange[1]} años</Label>
@@ -176,7 +176,7 @@ function AnalysisSegments({ token, clientesCache, fetchClientes }) {
             </div>
           </div>
 
-          <div className="text-sm text-gray-600">
+          <div className="text-xs sm:text-sm text-gray-600">
             Mostrando <strong>{filteredClientes.length}</strong> de <strong>{clientes.length}</strong> clientes
           </div>
         </CardContent>
@@ -184,39 +184,40 @@ function AnalysisSegments({ token, clientesCache, fetchClientes }) {
 
       {/* Satisfaction vs Balance */}
       <Card>
-        <CardHeader>
-          <CardTitle>Satisfacción vs Saldo Promedio</CardTitle>
-          <CardDescription>
+        <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6">
+          <CardTitle className="text-base sm:text-lg">Satisfacción vs Saldo Promedio</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
             Relación entre el nivel de satisfacción y el saldo promedio. Cada color representa un nivel.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart 
+        <CardContent className="px-1 sm:px-6 pb-3 sm:pb-6">
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart
               data={satisfactionBalanceData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              margin={{ top: 10, right: 10, left: -10, bottom: 50 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis 
-                dataKey="name" 
-                angle={-15}
+              <XAxis
+                dataKey="name"
+                angle={-20}
                 textAnchor="end"
-                height={80}
-                tick={{ fontSize: 12 }}
+                height={70}
+                tick={{ fontSize: 9 }}
+                interval={0}
               />
-              <YAxis 
-                yAxisId="left" 
-                orientation="left" 
+              <YAxis
+                yAxisId="left"
+                orientation="left"
                 stroke="#3b82f6"
-                label={{ value: 'Saldo Promedio ($)', angle: -90, position: 'insideLeft', style: { fontSize: 12 } }}
-                tick={{ fontSize: 11 }}
+                label={{ value: 'Saldo ($)', angle: -90, position: 'insideLeft', style: { fontSize: 10 } }}
+                tick={{ fontSize: 9 }}
               />
-              <YAxis 
-                yAxisId="right" 
-                orientation="right" 
+              <YAxis
+                yAxisId="right"
+                orientation="right"
                 stroke="#8b5cf6"
-                label={{ value: 'Número de Clientes', angle: 90, position: 'insideRight', style: { fontSize: 12 } }}
-                tick={{ fontSize: 11 }}
+                label={{ value: 'Clientes', angle: 90, position: 'insideRight', style: { fontSize: 10 } }}
+                tick={{ fontSize: 9 }}
               />
               <Tooltip 
                 contentStyle={{ 
@@ -262,8 +263,8 @@ function AnalysisSegments({ token, clientesCache, fetchClientes }) {
           </ResponsiveContainer>
           
           {/* Legend explanation */}
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-sm font-semibold mb-2">Interpretación:</p>
+          <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2">Interpretación:</p>
             <p className="text-xs text-gray-600">
               Las barras de <strong style={{ color: '#3b82f6' }}>colores</strong> muestran el saldo promedio por nivel de satisfacción.
               Las barras <strong style={{ color: '#8b5cf6' }}>moradas</strong> muestran cuántos clientes hay en cada nivel.
@@ -274,40 +275,40 @@ function AnalysisSegments({ token, clientesCache, fetchClientes }) {
 
       {/* Age vs Balance Scatter */}
       <Card>
-        <CardHeader>
-          <CardTitle>Análisis: Edad vs Saldo</CardTitle>
-          <CardDescription>
+        <CardHeader className="px-3 sm:px-6 pt-3 sm:pt-6">
+          <CardTitle className="text-base sm:text-lg">Análisis: Edad vs Saldo</CardTitle>
+          <CardDescription className="text-xs sm:text-sm">
             Cada punto representa un cliente. El color indica su nivel de satisfacción.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={450}>
-            <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+        <CardContent className="px-1 sm:px-6 pb-3 sm:pb-6">
+          <ResponsiveContainer width="100%" height={350}>
+            <ScatterChart margin={{ top: 10, right: 10, left: -10, bottom: 30 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-              <XAxis 
-                type="number" 
-                dataKey="edad" 
-                name="Edad" 
+              <XAxis
+                type="number"
+                dataKey="edad"
+                name="Edad"
                 domain={['dataMin - 2', 'dataMax + 2']}
-                label={{ 
-                  value: 'Edad del Cliente (años)', 
-                  position: 'insideBottom', 
-                  offset: -10,
-                  style: { fontSize: 13, fontWeight: 'bold' }
+                label={{
+                  value: 'Edad (años)',
+                  position: 'insideBottom',
+                  offset: -5,
+                  style: { fontSize: 10, fontWeight: 'bold' }
                 }}
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 9 }}
               />
-              <YAxis 
-                type="number" 
-                dataKey="saldo" 
+              <YAxis
+                type="number"
+                dataKey="saldo"
                 name="Saldo"
-                label={{ 
-                  value: 'Saldo ($)', 
-                  angle: -90, 
+                label={{
+                  value: 'Saldo ($)',
+                  angle: -90,
                   position: 'insideLeft',
-                  style: { fontSize: 13, fontWeight: 'bold' }
+                  style: { fontSize: 10, fontWeight: 'bold' }
                 }}
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 9 }}
               />
               <Tooltip 
                 cursor={{ strokeDasharray: '3 3' }}
@@ -337,49 +338,49 @@ function AnalysisSegments({ token, clientesCache, fetchClientes }) {
               </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
-          
+
           {/* Legend for satisfaction colors */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <p className="text-sm font-semibold mb-3">Leyenda de Colores:</p>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm" 
+          <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <p className="text-xs sm:text-sm font-semibold mb-2 sm:mb-3">Leyenda de Colores:</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm flex-shrink-0"
                   style={{ backgroundColor: SATISFACTION_COLORS[1] }}
                 ></div>
-                <span className="text-xs font-medium">Muy Insatisfecho</span>
+                <span className="text-xs font-medium">Muy Insat.</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm" 
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm flex-shrink-0"
                   style={{ backgroundColor: SATISFACTION_COLORS[2] }}
                 ></div>
                 <span className="text-xs font-medium">Insatisfecho</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm" 
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm flex-shrink-0"
                   style={{ backgroundColor: SATISFACTION_COLORS[3] }}
                 ></div>
                 <span className="text-xs font-medium">Neutral</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm" 
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm flex-shrink-0"
                   style={{ backgroundColor: SATISFACTION_COLORS[4] }}
                 ></div>
                 <span className="text-xs font-medium">Satisfecho</span>
               </div>
-              <div className="flex items-center gap-2">
-                <div 
-                  className="w-4 h-4 rounded-full border-2 border-white shadow-sm" 
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <div
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 border-white shadow-sm flex-shrink-0"
                   style={{ backgroundColor: SATISFACTION_COLORS[5] }}
                 ></div>
-                <span className="text-xs font-medium">Muy Satisfecho</span>
+                <span className="text-xs font-medium">Muy Sat.</span>
               </div>
             </div>
-            <p className="text-xs text-gray-600 mt-3">
-              <strong>Cómo leer el gráfico:</strong> Cada punto representa un cliente. 
+            <p className="text-xs text-gray-600 mt-2 sm:mt-3">
+              <strong>Cómo leer el gráfico:</strong> Cada punto representa un cliente.
               Si ves puntos rojos en la parte superior, son clientes insatisfechos con alto saldo (en riesgo de pérdida).
             </p>
           </div>
