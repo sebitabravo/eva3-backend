@@ -244,30 +244,28 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración de CORS - Control de acceso por origen
-# El frontend del contenedor tiene acceso completo a la API
-# Otros orígenes tienen solo acceso de lectura (GET)
+# Leer CORS_ALLOWED_ORIGINS del .env (separado por comas)
+cors_origins_str = os.getenv('CORS_ALLOWED_ORIGINS', '')
 
-# Lista de orígenes del frontend del contenedor que tienen acceso completo
-FRONTEND_CONTAINER_ORIGINS = [
-    'http://localhost:5173',  # Desarrollo local
-    'http://127.0.0.1:5173',  # Desarrollo local alternativo
-    os.getenv('FRONTEND_URL', 'http://localhost:5173'),  # Producción desde .env
-]
-
-# Permitir todos los orígenes para lectura, pero solo el frontend del contenedor
-# puede hacer operaciones de escritura (POST/PUT/PATCH/DELETE)
-CORS_ALLOWED_ORIGINS = FRONTEND_CONTAINER_ORIGINS + [
-    'http://localhost:3000',  # Otros clientes de desarrollo
-    'http://127.0.0.1:3000',
-]
+if cors_origins_str:
+    # Producción: usar lista del .env
+    CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins_str.split(',') if origin.strip()]
+else:
+    # Desarrollo: fallback a localhost
+    CORS_ALLOWED_ORIGINS = [
+        'http://localhost:5173',
+        'http://127.0.0.1:5173',
+        'http://localhost:3000',
+        'http://127.0.0.1:3000',
+        'http://localhost:8082',
+        'http://127.0.0.1:8082',
+    ]
 
 # En desarrollo permitir todos los orígenes para facilitar testing
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOW_ALL_ORIGINS = False
-    # En producción, usar lista específica
-    CORS_ALLOWED_ORIGINS = FRONTEND_CONTAINER_ORIGINS
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = [
